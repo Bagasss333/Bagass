@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register Unik</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #000000;
+      --box: #f5f5f5;
+    }
+    body.dark {
+      --bg: #121212;
+      --text: #ffffff;
+      --box: #1e1e1e;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .register-box {
+      background: var(--box);
+      padding: 20px;
+      margin-top: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      width: 320px;
+      text-align: center;
+      animation: slideIn 0.7s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .register-box input, .register-box select {
+      width: 90%;
+      padding: 8px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .register-box button {
+      background: #28a745;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 95%;
+    }
+
+    .register-box button:hover {
+      background: #218838;
+    }
+
+    .toggle-theme {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #333;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .quote-box {
+      margin-top: 10px;
+      font-style: italic;
+      font-size: 14px;
+      color: #555;
+      text-align: center;
+      max-width: 300px;
+    }
+
+    .progress-container {
+      width: 90%;
+      height: 8px;
+      background: #ddd;
+      border-radius: 5px;
+      margin: 10px auto;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: #28a745;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    table {
+      margin-top: 30px;
+      border-collapse: collapse;
+      width: 80%;
+      background: var(--box);
+      color: var(--text);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+
+    th {
+      background: #28a745;
+      color: white;
+    }
+
+    .popup {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #28a745;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.5s ease;
+    }
+
+    .popup.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <button class="toggle-theme" onclick="toggleTheme()">🌙 Mode Gelap</button>
+
+  <div class="register-box">
+    <h2>Form Registrasi</h2>
+
+    <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+
+    <form id="registerForm">
+      <input type="text" id="nama" placeholder="Masukkan Nama" required>
+      <input type="email" id="email" placeholder="Masukkan Email" required>
+      <input type="date" id="tanggal" required>
+      <input type="password" id="password" placeholder="Masukkan Password" required>
+
+      <div>
+        <label><input type="radio" name="gender" value="Laki-laki" required> Laki-laki</label>
+        <label><input type="radio" name="gender" value="Wanita"> Wanita</label>
+      </div>
+
+      <div>
+        <label><input type="checkbox" id="syarat" required> Setuju dengan syarat</label>
+      </div>
+
+      <button type="submit">Buat Akun</button>
+    </form>
+
+    <div class="quote-box" id="quoteBox"></div>
+  </div>
+
+  <div class="popup" id="popupMessage">Registrasi Berhasil!</div>
+
+  <table id="dataTable">
+    <thead>
+      <tr>
+        <th>Nama</th>
+        <th>Email</th>
+        <th>Tanggal Lahir</th>
+        <th>Jenis Kelamin</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById('registerForm');
+    const tableBody = document.querySelector('#dataTable tbody');
+    const progressBar = document.getElementById('progressBar');
+    const popup = document.getElementById('popupMessage');
+    const quoteBox = document.getElementById('quoteBox');
+
+    const quotes = [
+      "Setiap langkah kecil membawa kita lebih dekat pada tujuan.",
+      "Berani mencoba, berarti setengah menang.",
+      "Kegagalan adalah guru terbaik.",
+      "Jangan menyerah sebelum berjuang maksimal.",
+      "Konsistensi adalah kunci kesuksesan."
+    ];
+
+    // Tampilkan quote random
+    quoteBox.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+
+    // Theme toggle
+    function toggleTheme() {
+      document.body.classList.toggle("dark");
+    }
+
+    // Progress bar update
+    form.addEventListener('input', () => {
+      const total = form.querySelectorAll('input').length;
+      const filled = [...form.querySelectorAll('input')].filter(el => el.type !== "radio" && el.type !== "checkbox" ? el.value : el.checked).length;
+      const percent = (filled / total) * 100;
+      progressBar.style.width = percent + '%';
+    });
+
+    // Pop-up pesan
+    function showPopup(message) {
+      popup.textContent = message;
+      popup.classList.add('show');
+      setTimeout(() => popup.classList.remove('show'), 3000);
+    }
+
+    // Submit handler
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const nama = document.getElementById('nama').value;
+      const email = document.getElementById('email').value;
+      const tanggal = document.getElementById('tanggal').value;
+      const gender = document.querySelector('input[name="gender"]:checked').value;
+
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${nama}</td>
+        <td>${email}</td>
+        <td>${tanggal}</td>
+        <td>${gender}</td>
+      `;
+      tableBody.appendChild(row);
+      form.reset();
+      progressBar.style.width = '0%';
+      showPopup("Registrasi Berhasil!");
+    });
+  </script>
+</body>
+</html>
